@@ -8,11 +8,13 @@ import javax.swing.*;
 import java.awt.*;
 
 public class GamePanel extends JPanel implements Runnable{
-    //Initializing variables like dimension, tilesize, keyboard etc-
+
+    // Tile settings
     final int originalTileSize = 16;
     final int scale = 3;
-
     public final int tileSize = originalTileSize * scale;  // 48 pixels
+
+    // Screen settings
     public final int maxScreenCol = 18;
     public final int maxScreenRow = 12;
     public final int screenWidth = tileSize * maxScreenCol;  // 768 pixels
@@ -27,12 +29,13 @@ public class GamePanel extends JPanel implements Runnable{
     // FPS
     int FPS = 60;
 
+    // Game components
     KeyHandler keyH = new KeyHandler();
     Thread gameThread;
     public Player player = new Player(this, keyH);
     public TileManager tileM = new TileManager(this);
 
-    //Setting the Settings for the gamePanel like the dimesions, color
+    // Constructor: Sets up the game panel settings
     public GamePanel(){
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setBackground(Color.GRAY);
@@ -40,12 +43,14 @@ public class GamePanel extends JPanel implements Runnable{
         this.addKeyListener(keyH);
         this.setFocusable(true);
     }
-    //Litrally starts the gameloop
+
+    // Starts the game loop in a new thread
     public void startGameThread(){
         gameThread = new Thread(this);
         gameThread.start();
     }
-    //A delta timer for limiting fps to 60
+
+    // The game loop, running at a fixed FPS
     @Override
     public void run() {
         double drawInterval = 1000000000/FPS; // 0.01666
@@ -80,17 +85,19 @@ public class GamePanel extends JPanel implements Runnable{
         }
     }
 
+    // Updates the game state (e.g., player movement)
     public void update() {
         player.update();
     }
 
+    // Draws game elements to the screen
     public void paintComponent(Graphics g){
         super.paintComponent(g);
 
         Graphics2D g2 = (Graphics2D)g;
 
-        tileM.draw(g2);
-        player.draw(g2);
+        tileM.draw(g2); // Draws tiles
+        player.draw(g2); // Draws player
 
         g2.dispose();
 
