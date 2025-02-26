@@ -24,6 +24,8 @@ public class Player extends Entity {
         this.screenX = gp.screenWidth / 2 - (gp.tileSize / 2);
         this.screenY = gp.screenHeight / 2 - (gp.tileSize / 2);
 
+        solidArea = new Rectangle(8,12,32, 32);
+
         setDefaultValues();
         getPlayerImage();
     }
@@ -32,7 +34,7 @@ public class Player extends Entity {
     public void setDefaultValues() {
         worldX = gp.tileSize * 23; // Start position in world coordinates
         worldY = gp.tileSize * 21;
-        speed = 4;                 // Movement speed
+        speed = 5;                 // Movement speed
         direction = "down";         // Initial facing direction
     }
 
@@ -48,6 +50,7 @@ public class Player extends Entity {
             right1 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/player/right_1.png")));
             right2 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/player/right_2.png")));
         } catch (IOException e) {
+            System.err.println("Error loading player images: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -58,42 +61,47 @@ public class Player extends Entity {
             int dx = 0;  // Change in x-direction
             int dy = 0;  // Change in y-direction
 
-            // Determine movement direction based on key presses
+            // Determine movement direction
             if (keyH.upPressed) {
-                dy -= 1;
                 direction = "up";
+                dy = -speed;
             }
             if (keyH.downPressed) {
-                dy += 1;
                 direction = "down";
+                dy = speed;
             }
             if (keyH.leftPressed) {
-                dx -= 1;
                 direction = "left";
+                dx = -speed;
             }
             if (keyH.rightPressed) {
-                dx += 1;
                 direction = "right";
+                dx = speed;
             }
 
             // Adjust speed for diagonal movement
-            int baseSpeed = speed;
             if (dx != 0 && dy != 0) {
-                baseSpeed = (int) Math.round(speed * 0.707); // Reduce speed by sqrt(2)/2
+                dx = (int) Math.round(dx * 0.707);  // Reduce speed by sqrt(2)/2
+                dy = (int) Math.round(dy * 0.707);
             }
 
-            // Update player's world position
-            worldX += dx * baseSpeed;
-            worldY += dy * baseSpeed;
+            // 1. Check for collision in the X direction (horizontal)
+            collisonOn = false;
+            gp.cChecker.checkTile(this); // Check collision in the X direction
+            if (!collisonOn) {
+                worldX += dx;
+                worldY += dy;
+            }
 
             // Handle sprite animation
             spriteCounter++;
-            if (spriteCounter > 12) { // Change sprite every 12 frames
+            if (spriteCounter > 12) {
                 spriteNum = (spriteNum == 1) ? 2 : 1;
                 spriteCounter = 0;
             }
         }
     }
+
 
     // Draws the player on the screen
     public void draw(Graphics2D g2) {

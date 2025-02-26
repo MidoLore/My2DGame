@@ -12,8 +12,8 @@ import java.util.Objects;
 public class TileManager {
 
     GamePanel gp;
-    Tile[] tile;        // Array storing different tile types
-    int[][] mapTileNum; // 2D array representing the map using tile indices
+    public Tile[] tile;        // Array storing different tile types
+    public int[][] mapTileNum; // 2D array representing the map using tile indices
 
     public TileManager(GamePanel gp) {
         this.gp = gp;
